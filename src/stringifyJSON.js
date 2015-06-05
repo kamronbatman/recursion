@@ -5,8 +5,7 @@
 
 var stringifyJSON = function(obj) {
 	var objType = typeof obj;
-	console.log('Type: ' + objType + ' and ' + ((obj === null || objType === 'undefined') ? 'null' : obj.toString()) );
-	// your code goes here
+
 	if (obj === null) {
 		return 'null';
 	} else if ( objType === 'number' || objType === 'boolean' ) {
