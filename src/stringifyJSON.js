@@ -6,33 +6,36 @@
 var stringifyJSON = function(obj) {
 	var objType = typeof obj;
 
-	if (obj === null) {
-		return 'null';
-	} else if ( objType === 'number' || objType === 'boolean' ) {
-		return obj.toString();
-	}
-	else if ( objType === 'string' ) {
-		return '"' + obj.toString() + '"';
-	}
-	else if (Array.isArray(obj)) {
-		return '[' +
-			_.chain(obj)
-			.filter(function(value){ var valType = typeof value; return valType !== 'function' && valType !== 'undefined'; })
-			.reduce(function(memo, value, index, list){
-				if (index > 0) { memo += ','; }
-				return memo += stringifyJSON(value); //Prettify?
-			}, '').value()
-			+ ']';
-	} else if (objType !== 'function') {
-		return '{' +
-			(_.chain(obj)
-			.reduce(function(memo, value, key, list){
-				var valType = typeof value;
-				if (valType !== 'function' && valType !== 'undefined') {
-					if (memo.length > 0) { memo += ','; }
-					return memo += stringifyJSON(key) + ':' + stringifyJSON(value);
-				}
-			}, '').value() || '')
-			+ '}';
+	switch (objType) {
+		case 'number':
+		case 'boolean':
+			return obj.toString();
+		case 'string':
+			return '"' + obj.toString() + '"';
+		case 'object':
+		{
+			if (_.isNull(obj)) {
+				return 'null';
+			}
+			else if (_.isArray(obj)) {
+				return '[' +
+					(_.chain(obj)
+					.filter(function(value){ return !(_.isFunction(value) || _.isUndefined(value)); })
+					.reduce(function(memo, value, index){
+						return memo += (index ? ',' : '') + stringifyJSON(value); //Prettify?
+					}, '').value() || '')
+					+ ']';
+			}
+			else
+			{
+				return '{' +
+					(_.chain(obj)
+					.pick(function(value){ return !(_.isFunction(value) || _.isUndefined(value)); })
+					.reduce(function(memo, value, key){
+						return memo += (memo.length ? ',' : '') + stringifyJSON(key) + ':' + stringifyJSON(value);
+					}, '').value() || '')
+					+ '}';
+			}
+		}
 	}
 };
