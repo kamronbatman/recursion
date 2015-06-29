@@ -9,12 +9,12 @@ var getElementsByClassName = function(className){
 
 	//Not the most effecient method I admit.
 	var recurse = function(element) {
-		var classes = [];
+		var nodes = [];
 
-		if (_.intersection(element.classList, classNames).length == classNames.length) { classes.push( element ); }
+		if (_.intersection(element.classList, classNames).length == classNames.length) { nodes.push( element ); }
 
-		return classes.concat(
-			_.reduce(Array.prototype.slice.apply(element.childNodes), function(memo, value, index, list){ return memo.concat( recurse(value) ); },[]) );
+		return nodes.concat(
+			_.reduce(Array.prototype.slice.apply(element.childNodes), function(memo, value){ return memo.concat( recurse(value) ); },[]) );
 	};
 
 	return recurse(document.body);
